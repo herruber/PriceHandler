@@ -9,13 +9,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Reflection;
+using CefSharp;
+using CefSharp.WinForms;
 
 namespace PriceManager
 {
 
-    
+
     public partial class Form1 : Form
     {
+
+        public Form2 display = new Form2();
+
         public Form1()
         {
             InitializeComponent();
@@ -31,8 +36,10 @@ namespace PriceManager
 
             }
 
+
             Controller.GetPriceList();
 
+            display.Show();
         }
 
         private ModelData GetModelData(DataGridViewRow row)
@@ -90,10 +97,20 @@ namespace PriceManager
                 Controller.GenerateRequest("Home", "SavePriceList", "POST", Controller.modelData);
         }
 
+        public static int oldRowId = -1;
+
+
+
         private void itemView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int id = itemView.CurrentCell.ColumnIndex;
             int row = itemView.CurrentCell.RowIndex;
+
+            if (oldRowId != row)
+            {
+                oldRowId = row;
+
+            }
 
             if (itemView.CurrentCell.OwningColumn.Name.Contains("Icon"))
             {
@@ -191,7 +208,7 @@ namespace PriceManager
                     }
                 }
             }
-            
+
 
             return proplist;
         }

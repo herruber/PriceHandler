@@ -26,7 +26,7 @@ namespace PriceManager
 
         public static string GenerateRequest(string controller, string action, string method, object data)
         {
-            // Create a request for the URL. 
+            // Create a request for the URL.
             string json = JsonConvert.SerializeObject(data);
 
             string url = Url + "/" + controller + "/" + action;
@@ -54,30 +54,42 @@ namespace PriceManager
                 }
 
             }
-            
+
             // If required by the server, set the credentials.
             request.Credentials = CredentialCache.DefaultCredentials;
+            HttpWebResponse response;
 
-            // Get the response.
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            // Display the status.
+            try
+            {
+                // Get the response.
+                response = (HttpWebResponse)request.GetResponse();
+                // Get the stream containing content returned by the server.
+                dataStream = response.GetResponseStream();
 
-            // Get the stream containing content returned by the server.
-            dataStream = response.GetResponseStream();
+                // Open the stream using a StreamReader for easy access.
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.
+                string responseFromServer = reader.ReadToEnd();
 
-            // Open the stream using a StreamReader for easy access.
-            StreamReader reader = new StreamReader(dataStream);
-            // Read the content.
-            string responseFromServer = reader.ReadToEnd();
+                reader.Close();
+                response.Close();
+                return responseFromServer;
 
-            reader.Close();
-            response.Close();
-            return responseFromServer;
+            }
+            catch (Exception)
+            {
+                return null;
+                throw;
+            }
+
+
+
+
         }
 
         public static DataGridViewColumn CreateColumm(string name, Type type)
         {
-            
+
             if (type.IsEnum)
             {
                 DataGridViewComboBoxColumn col = new DataGridViewComboBoxColumn();
@@ -157,7 +169,7 @@ namespace PriceManager
                 }
             }
 
-            return -1;         
+            return -1;
         }
 
         public static void ParseAndAddItem(string name, List<ModelData> data)
@@ -189,8 +201,13 @@ namespace PriceManager
 
             modelData = new List<ModelData>();
             priceList.Rows.Clear();
-           
+
             string responseFromServer = GenerateRequest("Home", "GetPriceList", "GET", null);
+
+            if (responseFromServer == null)
+            {
+                return;
+            }
 
             PriceResult result = JsonConvert.DeserializeObject<PriceResult>(responseFromServer);
 
