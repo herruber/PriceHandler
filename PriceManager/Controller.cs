@@ -42,15 +42,17 @@ namespace PriceManager
 
             if (data != null)
             {
-                request.ContentType = "application/x-www-form-urlencoded";
-                byte[] byteArray = Encoding.UTF8.GetBytes("data=" +json);
+                request.ContentType = "application/json";
+                byte[] byteArray = Encoding.UTF8.GetBytes(json);
                 request.ContentLength = byteArray.Length;
 
-                dataStream = request.GetRequestStream();
-                // Write the data to the request stream.  
-                dataStream.Write(byteArray, 0, byteArray.Length);
-                // Close the Stream object.  
-                dataStream.Close();
+                using (var streamwriter = new StreamWriter(request.GetRequestStream()))
+                {
+                    streamwriter.Write(json);
+                    streamwriter.Flush();
+                    streamwriter.Close();
+                }
+
             }
             
             // If required by the server, set the credentials.
@@ -69,7 +71,6 @@ namespace PriceManager
             string responseFromServer = reader.ReadToEnd();
 
             reader.Close();
-            dataStream.Close();
             response.Close();
             return responseFromServer;
         }

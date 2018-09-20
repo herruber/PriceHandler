@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace PriceManager
 {
@@ -71,28 +72,66 @@ namespace PriceManager
                 {
                     //Name changed
                     data.OldNames.Add(data.Name);
-                    
+
                 }
                 data.Name = name;
-
-                for (int c = 0; c < row.Cells.Count; c++)
-                {
-
-                    var col = Controller.priceList.Columns[c];
-                    var cell = row.Cells[c];
-
-                    if (col.Name.ToLower().Contains("icon"))
-                    {
-                        data.IconPath = "";
-                    }
-                    else
-                    {
-                        typeof(ModelData).GetProperty(col.Name).SetValue(data, cell.Value);
-                    }
-                }
             }
 
-            Controller.GenerateRequest("Home", "SavePriceList", "POST", Controller.modelData);
+                //    for (int c = 0; c < row.Cells.Count; c++)
+                //    {
+
+                //        var col = Controller.priceList.Columns[c];
+                //        var cell = row.Cells[c];
+
+                //        typeof(ModelData).GetProperty(col.Name).SetValue(data, cell.Value);
+                //    }
+                //}
+
+                Controller.GenerateRequest("Home", "SavePriceList", "POST", Controller.modelData);
+        }
+
+        private void itemView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int id = itemView.CurrentCell.ColumnIndex;
+            int row = itemView.CurrentCell.RowIndex;
+
+            if (itemView.CurrentCell.OwningColumn.Name.Contains("Icon"))
+            {
+
+                using (OpenFileDialog dlg = new OpenFileDialog())
+                {
+
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+
+                        Image img = Image.FromFile(dlg.FileName);
+
+                        ImageConverter converter = new ImageConverter();
+                        byte[] bytes = System.IO.File.ReadAllBytes(dlg.FileName); // (byte[])converter.ConvertTo(img, typeof(byte[]));
+
+                        string base64 = Convert.ToBase64String(bytes);
+
+
+                        Controller.modelData[row].IconPath = base64;
+                    }
+                }
+
+            }
+        }
+
+        private void itemView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!itemView.CurrentCell.OwningColumn.Name.ToLower().Contains("icon"))
+            {
+                int id = itemView.CurrentCell.ColumnIndex;
+                int row = itemView.CurrentCell.RowIndex;
+
+                string name = itemView.CurrentCell.OwningColumn.Name;
+
+                var data = Controller.modelData[row];
+                PropertyInfo prop = data.GetType().GetProperty(name);
+                prop.SetValue(data, itemView.CurrentCell.Value);
+            }
         }
     }
 

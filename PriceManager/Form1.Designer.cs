@@ -40,6 +40,8 @@
             this.itemView.Name = "itemView";
             this.itemView.Size = new System.Drawing.Size(1018, 446);
             this.itemView.TabIndex = 0;
+            this.itemView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.itemView_CellClick);
+            this.itemView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.itemView_CellValueChanged);
             // 
             // saveChanges
             // 
