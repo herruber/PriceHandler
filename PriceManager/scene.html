@@ -5,20 +5,22 @@
     <meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title></title>
-
+    
 </head>
 <body>
+    <link href="style.css" rel="stylesheet" />
 
-    <div id="render-view" style="width: 200px; height:200px;"></div>
+    
 
+
+    <div id="render-view" style="width: 400px; height:400px;"></div>
+
+    <input class="lightpos" type="range" min="-1" max="360" value="-1" />
+    
+    <script src="Scripts/jquery-3.3.1.js"></script>
     <script src="Scripts/three.js"></script>
     <script src="Scripts/app.js"></script>
-    <script>
-        document.body.style.overflow = "hidden";
-        document.onload = function () {
-            run(document.getElementById("render-view"));
 
-        }
-    </script>
+    
 </body>
 </html>

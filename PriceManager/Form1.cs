@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 using CefSharp;
 using CefSharp.WinForms;
+using System.Runtime.InteropServices;
 
 namespace PriceManager
 {
@@ -21,6 +22,7 @@ namespace PriceManager
 
         public Form2 display = new Form2();
 
+        
         public Form1()
         {
             InitializeComponent();
